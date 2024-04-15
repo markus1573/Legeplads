@@ -82,7 +82,7 @@ test_loader = DataLoader(
     batch_size=BATCH_SIZE,
     # num_workers=NUM_WORKERS,
     # pin_memory=PIN_MEMORY,
-    shuffle=True,
+    shuffle=False,
     drop_last=False,
 )
 #########################################################################
