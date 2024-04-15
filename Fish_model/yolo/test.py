@@ -83,7 +83,7 @@ test_loader = DataLoader(
     # num_workers=NUM_WORKERS,
     # pin_memory=PIN_MEMORY,
     shuffle=True,
-    drop_last=True,
+    drop_last=False,
 )
 #########################################################################
 # Model
