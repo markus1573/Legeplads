@@ -363,7 +363,7 @@ def load_checkpoint(checkpoint, model, optimizer):
 def train_step(model,train_loader,loss_fn,optimizer,device=device):
     train_loss = 0
     model.train()
-    for batch,(X_train,y_train) in enumerate(tqdm(train_loader)):
+    for batch,(X_train,y_train) in enumerate(train_loader):
         X_train = X_train.to(device)
         y_train = y_train.to(device)
         y_logits = model(X_train).squeeze()
@@ -405,7 +405,7 @@ def eval_model(model, test_loader, loss_fn,
     y_preds_total = []
     y_total = []
     with torch.inference_mode():
-        for X, y in tqdm(test_loader):
+        for X, y in (test_loader):
             y_preds = torch.sigmoid(model.to("cpu")(X)).round().squeeze()
             y_preds_total.extend(y_preds.numpy())
             y_total.extend(y.to("cpu").numpy())
