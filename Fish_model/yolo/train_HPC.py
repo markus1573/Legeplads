@@ -32,7 +32,7 @@ else:  # For Unix and Linux
     if os.getcwd().split('/')[-1] != 'Legeplads':
         os.chdir('../..')
 
-os.getcwd()
+print(os.getcwd())
 
 # ## Hyperparameters
 
