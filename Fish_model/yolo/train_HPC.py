@@ -37,13 +37,14 @@ print(os.getcwd())
 # ## Hyperparameters
 
 # Hyperparameters etc. 
-LEARNING_RATE = 2e-5
+LEARNING_RATE = 1e-3
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-BATCH_SIZE = 16 # 64 in original paper but I don't have that much vram, grad accum?
-WEIGHT_DECAY = 0
+BATCH_SIZE = 32 # 64 in original paper but I don't have that much vram, grad accum?
+WEIGHT_DECAY = 0.0005
+MOMENTUM = 0.9
 EPOCHS = 1000
 NUM_WORKERS = 0 # Test hvad de gør med cuda
-PIN_MEMORY = False # Test hvad de gør med cuda
+PIN_MEMORY = True # Test hvad de gør med cuda
 LOAD_MODEL = False
 LOAD_MODEL_FILE = "../overfit.pth.tar"
 
@@ -88,8 +89,8 @@ test_loader = DataLoader(
 #########################################################################
 # Model
 model1 = yolo_fish(split_size=7, num_boxes=2, num_classes=1).to(DEVICE)
-optimizer = optim.Adam(
-    model1.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
+optimizer = optim.SGD(
+    model1.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY,momentum=MOMENTUM
 )
 loss_fn = YoloLoss()
 #########################################################################
@@ -103,7 +104,7 @@ seed = 123
 torch.manual_seed(seed)
 train_loss_all = []
 test_loss_all = []
-for epoch in tqdm(range(EPOCHS)):
+for epoch in (range(EPOCHS)):
     print(f"Epoch: {epoch}")
     # Train
     train_loss = train_step(model1,train_loader,loss_fn,optimizer,DEVICE)
@@ -136,8 +137,5 @@ for epoch in tqdm(range(EPOCHS)):
 
 # ## Save model
 
-checkpoint = {
-               "state_dict": model1.state_dict(),
-               "optimizer": optimizer.state_dict(),
-        }
-save_checkpoint(checkpoint, filename=LOAD_MODEL_FILE)
+
+save_checkpoint(model=model1, optimizer=optimizer, filename=LOAD_MODEL_FILE)

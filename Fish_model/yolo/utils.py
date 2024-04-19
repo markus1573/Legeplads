@@ -348,10 +348,16 @@ def cellboxes_to_boxes(out, S=7):
     return all_bboxes
 
 
-def save_checkpoint(state, filename="my_checkpoint.pth.tar"):
+def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
     print("=> Saving checkpoint")
-    torch.save(state, filename)
-
+    checkpoint = {
+        "state_dict": model.state_dict(),
+        "optimizer": optimizer.state_dict()
+    }
+    # Add the 'step' attribute to the checkpoint's optimizer state
+    checkpoint['optimizer']['step'] = optimizer.state['step']
+    torch.save(checkpoint, filename)
+    print(f"=> Saved checkpoint to {filename}")
 
 def load_checkpoint(checkpoint, model, optimizer):
     print("=> Loading checkpoint")
