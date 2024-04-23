@@ -348,21 +348,24 @@ def cellboxes_to_boxes(out, S=7):
     return all_bboxes
 
 
-def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
+def save_checkpoint(model, optimizer,scheduler = None, filename="my_checkpoint.pth.tar"):
     print("=> Saving checkpoint")
     checkpoint = {
         "state_dict": model.state_dict(),
         "optimizer": optimizer.state_dict()
     }
-    # Add the 'step' attribute to the checkpoint's optimizer state
-    checkpoint['optimizer']['step'] = optimizer.state['step']
+    if scheduler is not None:
+        checkpoint["scheduler"] = scheduler.state_dict()
     torch.save(checkpoint, filename)
     print(f"=> Saved checkpoint to {filename}")
 
-def load_checkpoint(checkpoint, model, optimizer):
+
+def load_checkpoint(checkpoint, model, optimizer, scheduler=None):
     print("=> Loading checkpoint")
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
+    if scheduler is not None:
+        scheduler.load_state_dict(checkpoint["scheduler"])
     print("=> Loaded checkpoint")
 
 
@@ -429,3 +432,35 @@ def eval_model(model, test_loader, loss_fn,
         c_matrix = comfmat(y_preds_total,y_total)
         print(f"Confusion matrix: \n{c_matrix}")
     return y_preds_total, y_total, {"Model Name":model.__class__.__name__,"loss":loss.item(),"accuracy":acc.item(),"confusion_matrix":c_matrix}
+
+
+class CustomLRScheduler:
+    def __init__(self, optimizer, init_lr, peak_lr, total_epochs, warmup_epochs=10):
+        self.optimizer = optimizer
+        self.init_lr = init_lr
+        self.peak_lr = peak_lr
+        self.total_epochs = total_epochs
+        self.current_epoch = 0
+        self.warmup_epochs = warmup_epochs
+
+    def get_lr(self):
+        if self.current_epoch < 10:
+            print(f"Epoch {self.current_epoch}: Constant learning rate of {self.init_lr}")
+            return self.init_lr
+        elif 10 <= self.current_epoch < 20:
+            print(f"Epoch {self.current_epoch}: Learning rate increased linearly to {self.peak_lr}")
+            return (self.peak_lr - self.init_lr) / self.warmup_epochs * (self.current_epoch-10) + self.init_lr
+        elif 20 <= self.current_epoch < 60:
+            print(f"Epoch {self.current_epoch}: Learning rate constant at {self.peak_lr}")
+            return self.peak_lr
+        else:
+            # Calculate the exponential decay rate
+            print(f"Epoch {self.current_epoch}: Learning rate decaying exponentially")
+            decay_rate = (self.init_lr / self.peak_lr) ** (1 / (self.total_epochs - 60))
+            return self.peak_lr * (decay_rate ** (self.current_epoch - 60))
+
+    def step(self):
+        lr = self.get_lr()
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = lr
+        self.current_epoch += 1
