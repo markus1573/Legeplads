@@ -38,7 +38,7 @@ def FocusWindowAndGetWindowPOS():
 
     # Get window placement
     global window_width, window_height
-    # if ag.pyscreeze.is_retina:
+    # if ag.pyscreeze.is_retina():
     #     window_width = int(1256*2)
     #     window_height = int(696.5*2)
     # else:
@@ -55,7 +55,7 @@ def FocusWindowAndGetWindowPOS():
     BottomRightCorner = (TopRightCorner[0], TopRightCorner[1] + window_height)
     BottomLeftCorner = (BottomRightCorner[0] - window_width, BottomRightCorner[1])
 
-    # # move mouse to wrench and all corners of the window
+    # move mouse to wrench and all corners of the window
     # ag.moveTo(Wrench,_pause=False)
     # ag.sleep(1)
     # ag.moveTo(TopRightCorner,_pause=False)
@@ -69,7 +69,7 @@ def FocusWindowAndGetWindowPOS():
 
     # Get window region
     global bbox
-    if ag.pyscreeze.is_retina:
+    if ag.pyscreeze.is_retina():
         bbox = (TopleftCorner[0]*2, TopleftCorner[1]*2, window_width*2, window_height*2)
     else:
         bbox = TopleftCorner + (window_width, window_height)
@@ -197,7 +197,7 @@ def FocusWindowAndGetWindowPOS():
 def Region(region:tuple|list):
     """
     """
-    if ag.pyscreeze.is_retina:
+    if ag.pyscreeze.is_retina():
         return ((region[0]+offsetx)*2,(region[1]+offsety)*2,region[2]*2,region[3]*2)
     else:
         return (region[0]+offsetx,region[1]+offsety,region[2],region[3])
@@ -231,7 +231,7 @@ def Find_fish_new():
         x1, y1, x2, y2, _, _ = results.xyxy[0].numpy()[0]
         x = (x1 + x2) / 2
         y = (y1 + y2) / 2
-        if ag.pyscreeze.is_retina:
+        if ag.pyscreeze.is_retina():
             return (x//2+offsetx, y//2+offsety)
         else:
             return (x+offsetx,y+offsety)
@@ -475,7 +475,7 @@ def extract_numeric(text):
     
 def Get_Lvl(hero_loc):
     loc = (hero_loc[0]+215,hero_loc[1]-20)
-    if ag.pyscreeze.is_retina:
+    if ag.pyscreeze.is_retina():
         bbox = (loc[0]*2,loc[1]*2,245,45)
     else:
         bbox = (hero_loc[0]+215,hero_loc[1]-20,128,28)
@@ -595,15 +595,27 @@ def guild_hero(hero:str):
     Stop_background_processes()
     Stop_check_ascend()
     region = Region([70,365,100,325])
+    print(region)
     Scroll_Bottom()
+    ag.moveTo(region[0])
+    ag.sleep(1)
+    ag.moveTo(region[1])
+    ag.sleep(1)
+    ag.moveTo(region[0]+region[2])
+    ag.sleep(1)
+    ag.moveTo(region[1]+region[3])
+    ag.sleep(1)
     guild_button_loc = ag.locateCenterOnScreen("Photos/Buttons/Guilded_button.png",region=region,confidence=0.9)
+    print(guild_button_loc)
+    sys.exit()
     ag.click(guild_button_loc,_pause=False)
+    
     ag.sleep(0.1)
     guild_hero_loc = Guild_imsearch(hero)
     ag.keyDown("q",_pause=False)
-    ag.sleep(0.1)
+    ag.sleep(0.2)
     ag.click(guild_hero_loc,_pause=False)
-    ag.sleep(0.1)
+    ag.sleep(0.2)
     ag.keyUp("q",_pause=False)
     check_guild_region = Region([135,115,950,390])
     loc = ag.locateCenterOnScreen(f"Photos/Guilds/Guilded/{hero}_guilded.png",region=check_guild_region,confidence=0.9)
@@ -923,7 +935,9 @@ def Init_fishing(daemon:bool=True):
     global fishing_thread
     fishing_thread = Fishing(daemon=daemon)
     global model
-    model = torch.hub.load("yolov5", 'custom', path='yolov5/runs/train/300_hpc/weights/best.pt', source='local',force_reload=True,device="cpu")
+    import pathlib
+    pathlib.PosixPath = pathlib.WindowsPath
+    model = torch.hub.load("yolov5", 'custom', path=os.path.join('yolov5', 'runs', 'train', '300_hpc', 'weights', 'best.pt'), source='local')
     fishing_thread.start()
 
 
@@ -1056,14 +1070,15 @@ def Start_check_ascend():
 
 
 def Stop_check_ascend():
-    check_ascend_thread.stop_check_ascend()
+    # check_ascend_thread.stop_check_ascend()
+
     ag.sleep(0.1)
 
 
 class Clicking(threading.Thread):
     def __init__(self,loc,daemon:bool=True):
         super(Clicking, self).__init__(daemon=daemon)
-        self.delay = 0.008
+        self.delay = 0.008# if sys.platform == "darwin" else 0.025
         self.running = False
         self.program_running = True
         self.loc = loc
@@ -1075,11 +1090,13 @@ class Clicking(threading.Thread):
         self.running = False
     
     def run(self):
-        while self.program_running:
-            while self.running and not fishing:
-                    ag.click(self.loc,_pause=False)
-                    ag.sleep(self.delay)
-            ag.sleep(0.1)
+        pass
+        # while self.program_running:
+        #     while self.running and not fishing:
+        #             print("Clicking")
+        #             ag.click(self.loc,_pause=False)
+        #             ag.sleep(self.delay)
+        #     ag.sleep(0.1)
 
 
 def Init_autoclicker(loc,daemon:bool=True):
@@ -1089,11 +1106,13 @@ def Init_autoclicker(loc,daemon:bool=True):
     
 
 def Start_autoclicker():
+    print("Clicking")
     click_thread.start_clicking()
     ag.sleep(0.1)
     
 
 def Stop_autoclicker():
+    print("Clicking")
     click_thread.stop_clicking()
     ag.sleep(0.1)
 
@@ -1256,52 +1275,79 @@ class Standard_run(threading.Thread):
             while self.running:
                 print("Starting standard run")
                 if not self.program_running:
+                    print("Program is not running")
                     break
                 if GUILDED_HERO != None:
+                    print("Guilded Hero is not None")
                     if not self.program_running:
+                        print("Program is not running")
                         break
                     if GUILDED_HERO == "Samurai":
+                        print("Guilded Hero is Samurai")
                         GUILDED_HERO_COPIES = []
                     else:
+                        print("Guilded Hero is not Samurai")
                         if not self.program_running:
+                            print("Program is not running")
                             break
                         duplicates = Has_duplicates(GUILDED_HERO)
                         if duplicates:
+                            print("Duplicates found")
                             GUILDED_HERO_COPIES = duplicates
                         else:
+                            print("No duplicates found")
                             GUILDED_HERO_COPIES = []
                         guild_hero(Guilded_heroes[Guilded_heroes.index(GUILDED_HERO)-1])
                 if not self.program_running:
+                    print("Program is not running")
                     break
+                print("Checking if START_IDLE is True")
                 if START_IDLE:
+                    print("START_IDLE is True, going idle")
                     Go_idle()
                 else:
+                    print("START_IDLE is False, going active")
                     Go_active()
                 if not self.program_running:
+                    print("Program is not running")
                     break
+                print("Trying to get skill timers")
                 try:
                     get_skill_timers()
                 except:
+                    print("Failed to get skill timers")
                     if not self.program_running:
+                        print("Program is not running")
                         break
+                    print("Starting autoclicker")
                     Start_autoclicker()
                     ag.sleep(10)
+                    print("Stopping autoclicker")
                     Stop_autoclicker()
                     if not self.program_running:
+                        print("Program is not running")
                         break
                     ag.sleep(5)
                     if not self.program_running:
+                        print("Program is not running")
                         break
+                    print("Buying 'Treebeast'")
                     BuyHero("Treebeast")
                     if not self.program_running:
+                        print("Program is not running")
                         break
                     ag.sleep(10)
                     if not self.program_running:
+                        print("Program is not running")
                         break
+                    print("Buying early heroes")
                     BuyEarlyHeroes()
                     if not self.program_running:
+                        print("Program is not running")
                         break
+                    print("Leveling heroes to guilded heroes")
                     Lvl_Hero_To(Guilded_heroes)
+                print("Leveling heroes to latest guilded hero")
                 Lvl_Hero_To(Guilded_heroes[Check_latest_hero():])
             ag.sleep(0.1)
 
@@ -1341,25 +1387,24 @@ def Stop_standard_run():
 
 
 def Start_background_processes():
-    Start_fishing()
-    Start_auto_progress()
-    Start_check_ascend()
-
+    # Start_fishing()
+    # Start_auto_progress()
+    # Start_check_ascend()
+    pass
 
 def Stop_background_processes():
-    Stop_fishing()
-    Stop_auto_progress()
-    Stop_check_ascend()
+    # Stop_fishing()
+    # Stop_auto_progress()
+    # Stop_check_ascend()
+    pass
 
 
 def Initialize_program():
     os.system("clear")
     FocusWindowAndGetWindowPOS()
-    Init_autoclicker((950+offsetx,350+offsety))
-    Init_fishing()
-    Init_auto_progress()
-    Init_use_skills()
-    Init_check_ascend()
+    # Init_autoclicker((950+offsetx,350+offsety))
+    # Init_fishing()
+    # Init_auto_progress()
+    # Init_use_skills()
+    # Init_check_ascend()
     Init_standard_run() # Main run.
-
-
