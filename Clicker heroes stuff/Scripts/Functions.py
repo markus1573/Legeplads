@@ -923,7 +923,7 @@ def Init_fishing(daemon:bool=True):
     global fishing_thread
     fishing_thread = Fishing(daemon=daemon)
     global model
-    model = torch.hub.load("yolov5", 'custom', path='yolov5/runs/train/300_hpc/weights/best.pt', source='local')
+    model = torch.hub.load("yolov5", 'custom', path='yolov5/runs/train/300_hpc/weights/best.pt', source='local',force_reload=True,device="cpu")
     fishing_thread.start()
 
 
