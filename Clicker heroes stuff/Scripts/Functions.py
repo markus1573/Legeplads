@@ -83,115 +83,115 @@ def FocusWindowAndGetWindowPOS():
 
 
 
-def check_pixel_color(pixel_color, target_color, tolerance):
-    """
-    Check if a pixel color matches the target color within the specified tolerance.
+# def check_pixel_color(pixel_color, target_color, tolerance):
+#     """
+#     Check if a pixel color matches the target color within the specified tolerance.
     
-    Parameters
-    ----------
-    pixel_color : tuple
-        The color of the pixel.
-    target_color : tuple
-        The target color of the pixel.
-    tolerance : int
-        The color tolerance of the pixel.
+#     Parameters
+#     ----------
+#     pixel_color : tuple
+#         The color of the pixel.
+#     target_color : tuple
+#         The target color of the pixel.
+#     tolerance : int
+#         The color tolerance of the pixel.
 
-    Returns
-    -------
-    bool
-        True if the pixel color matches the target color within the specified tolerance, False otherwise.
-    """
-    if isinstance(pixel_color, int) or isinstance(pixel_color, np.uint8):
-        pixel_color = (pixel_color, pixel_color, pixel_color)
-    if isinstance(target_color, int) or isinstance(target_color, np.uint8):
-        target_color = (target_color, target_color, target_color)        
+#     Returns
+#     -------
+#     bool
+#         True if the pixel color matches the target color within the specified tolerance, False otherwise.
+#     """
+#     if isinstance(pixel_color, int) or isinstance(pixel_color, np.uint8):
+#         pixel_color = (pixel_color, pixel_color, pixel_color)
+#     if isinstance(target_color, int) or isinstance(target_color, np.uint8):
+#         target_color = (target_color, target_color, target_color)        
 
-    elif len(pixel_color) != len(target_color):
-        raise ValueError("Pixel and target color must have the same number of channels")
+#     elif len(pixel_color) != len(target_color):
+#         raise ValueError("Pixel and target color must have the same number of channels")
     
-    for i in range(3):  # Check RGB channels
-        if abs(pixel_color[i] - target_color[i]) > tolerance:
-            return False
-    return True
+#     for i in range(3):  # Check RGB channels
+#         if abs(pixel_color[i] - target_color[i]) > tolerance:
+#             return False
+#     return True
 
 
-def search_pixel_color(image, target_color:tuple, tolerance: int):
-    """
-    Search for the target color in the image within the specified tolerance.
+# def search_pixel_color(image, target_color:tuple, tolerance: int):
+#     """
+#     Search for the target color in the image within the specified tolerance.
 
-    Parameters
-    ----------
-    image : array
-        The cropped screenshot.
-    target_color : tuple
-        The target color of the pixel.
-    tolerance : int
-        The color tolerance of the pixel.
+#     Parameters
+#     ----------
+#     image : array
+#         The cropped screenshot.
+#     target_color : tuple
+#         The target color of the pixel.
+#     tolerance : int
+#         The color tolerance of the pixel.
 
-    Returns
-    -------
-    matches : list
-        A list of tuples containing the coordinates of the matches.
-    """
-    if len(image.shape) != 3:
-        h,w = image.shape
-    else:
-        h, w, _ = image.shape
-    matches = []
+#     Returns
+#     -------
+#     matches : list
+#         A list of tuples containing the coordinates of the matches.
+#     """
+#     if len(image.shape) != 3:
+#         h,w = image.shape
+#     else:
+#         h, w, _ = image.shape
+#     matches = []
 
-    for y in range(h):
-        for x in range(w):
-            if check_pixel_color(image[y, x], target_color, tolerance):
-                matches.append((x, y))
+#     for y in range(h):
+#         for x in range(w):
+#             if check_pixel_color(image[y, x], target_color, tolerance):
+#                 matches.append((x, y))
 
-    return matches
+#     return matches
 
 
-def Remove_buttons(image):
-    """
-    TODO: Mangler at få dette til at virke til alle skærmstørrelser.
+# def Remove_buttons(image):
+#     """
+#     TODO: Mangler at få dette til at virke til alle skærmstørrelser.
 
-    Remove the ritual button, the farmmode button and the mute button from the screenshot.
+#     Remove the ritual button, the farmmode button and the mute button from the screenshot.
 
-    Parameters
-    ----------
-    image : array
-        The screenshot.
+#     Parameters
+#     ----------
+#     image : array
+#         The screenshot.
 
-    Returns
-    -------
-    image : array
-        The cropped screenshot with the buttons removed.
-    """
+#     Returns
+#     -------
+#     image : array
+#         The cropped screenshot with the buttons removed.
+#     """
    
     
-    # location of ritual button:
-    ritual_region = Region([628,450,48,48])
+#     # location of ritual button:
+#     ritual_region = Region([628,450,48,48])
 
-    # remove ritual button from screenshot
-    image[ritual_region[1]:ritual_region[1]+ritual_region[3],
-          ritual_region[0]:ritual_region[0]+ritual_region[2],:] \
-            [image[ritual_region[1]:ritual_region[1]+ritual_region[3],
-          ritual_region[0]:ritual_region[0]+ritual_region[2],:][:,:,2]>200] = [0,0,0]
+#     # remove ritual button from screenshot
+#     image[ritual_region[1]:ritual_region[1]+ritual_region[3],
+#           ritual_region[0]:ritual_region[0]+ritual_region[2],:] \
+#             [image[ritual_region[1]:ritual_region[1]+ritual_region[3],
+#           ritual_region[0]:ritual_region[0]+ritual_region[2],:][:,:,2]>200] = [0,0,0]
 
-    # Location of farmmode button:
-    farmmode_region = Region([1193,182,38,38])
+#     # Location of farmmode button:
+#     farmmode_region = Region([1193,182,38,38])
 
-    # remove farmmode button from screenshot
-    image[farmmode_region[1]:farmmode_region[1]+farmmode_region[3],
-          farmmode_region[0]:farmmode_region[0]+farmmode_region[2],:] \
-            [image[farmmode_region[1]:farmmode_region[1]+farmmode_region[3],
-          farmmode_region[0]:farmmode_region[0]+farmmode_region[2],:][:,:,2]==214] = [0,0,0]
+#     # remove farmmode button from screenshot
+#     image[farmmode_region[1]:farmmode_region[1]+farmmode_region[3],
+#           farmmode_region[0]:farmmode_region[0]+farmmode_region[2],:] \
+#             [image[farmmode_region[1]:farmmode_region[1]+farmmode_region[3],
+#           farmmode_region[0]:farmmode_region[0]+farmmode_region[2],:][:,:,2]==214] = [0,0,0]
 
-    #location of mute button:
-    mute_region = Region([1193,625,38,38])
+#     #location of mute button:
+#     mute_region = Region([1193,625,38,38])
 
-    # remove mute button from screenshot
-    image[mute_region[1]:mute_region[1]+mute_region[3],
-          mute_region[0]:mute_region[0]+mute_region[2],:] \
-            [image[mute_region[1]:mute_region[1]+mute_region[3],
-          mute_region[0]:mute_region[0]+mute_region[2],:][:,:,2]==210] = [0,0,0]
-    return image
+#     # remove mute button from screenshot
+#     image[mute_region[1]:mute_region[1]+mute_region[3],
+#           mute_region[0]:mute_region[0]+mute_region[2],:] \
+#             [image[mute_region[1]:mute_region[1]+mute_region[3],
+#           mute_region[0]:mute_region[0]+mute_region[2],:][:,:,2]==210] = [0,0,0]
+#     return image
 
 
 def Region(region:tuple|list):
@@ -239,76 +239,47 @@ def Find_fish_new():
         return None
 
 
-def Find_fish(target_color=(41, 92, 212), tolerance=5):
-    """
-    Search for fish in the game window and place mouse on it.
+# def Find_fish(target_color=(41, 92, 212), tolerance=5):
+#     """
+#     Search for fish in the game window and place mouse on it.
     
-    Parameters
-    ----------
-    target_color : tuple. Default: (41,92,212)
+#     Parameters
+#     ----------
+#     target_color : tuple. Default: (41,92,212)
 
-    tolerance : int. Default: 5
+#     tolerance : int. Default: 5
 
-    Returns
-    -------
-    tuple
-        A tuple containing the coordinates of the fish.
-    """
-    # Get the screenshot
-    screenshot_crop = Screenshot(region=bbox)
-    cv2.imwrite("Photos/Logged_Screenshots/Screenshot1.png",screenshot_crop)
+#     Returns
+#     -------
+#     tuple
+#         A tuple containing the coordinates of the fish.
+#     """
+#     # Get the screenshot
+#     screenshot_crop = Screenshot(region=bbox)
+#     cv2.imwrite("Photos/Logged_Screenshots/Screenshot1.png",screenshot_crop)
 
-    # Remove ritual button from screenshot
-    screenshot_crop = Remove_buttons(screenshot_crop)
-    cv2.imwrite("Photos/Logged_Screenshots/Screenshot2.png",screenshot_crop)
+#     # Remove ritual button from screenshot
+#     screenshot_crop = Remove_buttons(screenshot_crop)
+#     cv2.imwrite("Photos/Logged_Screenshots/Screenshot2.png",screenshot_crop)
     
-    # Search for the target color in the screenshot
-    matches = search_pixel_color(screenshot_crop, target_color, tolerance)
-    # print(f"Found {str(len(matches))} matches")
-    if len(matches) > 40:
-        # Calculate the average position of detected matches
-        avg_x = int(np.mean([match[0] for match in matches]))
-        avg_y = int(np.mean([match[1] for match in matches]))
+#     # Search for the target color in the screenshot
+#     matches = search_pixel_color(screenshot_crop, target_color, tolerance)
+#     # print(f"Found {str(len(matches))} matches")
+#     if len(matches) > 40:
+#         # Calculate the average position of detected matches
+#         avg_x = int(np.mean([match[0] for match in matches]))
+#         avg_y = int(np.mean([match[1] for match in matches]))
 
-        # calculate the median position of detected matches
-        median_x = int(np.median([match[0] for match in matches]))
-        median_y = int(np.median([match[1] for match in matches]))
+#         # calculate the median position of detected matches
+#         median_x = int(np.median([match[0] for match in matches]))
+#         median_y = int(np.median([match[1] for match in matches]))
 
-        if ag.pyscreeze.is_retina:
-            return (median_x//2+offsetx, median_y//2+offsety)
-        else:
-            return (median_x+offsetx,median_y+offsety)
-    else:
-        return None
-
-
-def Make_dataset(num_images_x, num_images_y):
-    """
-    Take a dataset of screenshots of the game window.
-
-    Parameters
-    ----------
-    num_images_x : int
-        The number of screenshots to take in the x-direction.
-    num_images_y : int
-        The number of screenshots to take in the y-direction.
-
-    Returns
-    -------
-    None.
-    """
-    num_images_x = num_images_x+2
-    num_images_y = num_images_y+2
-    screenshot = Screenshot(region=bbox)
-    for i in range(num_images_y-1):
-        for j in range(num_images_x-1):
-            screenshot_cropped = screenshot[i*2*window_height//num_images_y:2*((i+1)*window_height+window_height)//num_images_y, 
-                                            j*2*window_width//num_images_x:2*((j+1)*window_width+window_width)//num_images_x]
-            cv2.imwrite(f"Photos/Dataset/Images/12Screenshot_{str(i)}_{str(j)}.png",screenshot_cropped)
-    return
-
-
-
+#         if ag.pyscreeze.is_retina:
+#             return (median_x//2+offsetx, median_y//2+offsety)
+#         else:
+#             return (median_x+offsetx,median_y+offsety)
+#     else:
+#         return None
 
 
 def BuyAllUpgrades():
@@ -520,12 +491,12 @@ def Get_Lvl(hero_loc):
         # print(f"lvl: {lvl}")
         ag.click(loc[0]+75,loc[1]+15,_pause=False)
         ag.sleep(0.1)
-        cv2.imwrite("Photos/Logged_Screenshots/Get_Lvl.png",im)
+        # cv2.imwrite("Photos/Logged_Screenshots/Get_Lvl.png",im)
         return lvl
     else:
         lvl = text_int
         # print(f"lvl: {lvl}")
-        cv2.imwrite("Photos/Logged_Screenshots/Get_Lvl.png",im)
+        # cv2.imwrite("Photos/Logged_Screenshots/Get_Lvl.png",im)
         return lvl
 
 
@@ -722,7 +693,7 @@ def get_skill_timers():
             ag.sleep(0.2)
             image = Screenshot(region=skill_regions[skill])
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            cv2.imwrite(f"Photos/Logged_Screenshots/Skills/{skill}.png",gray)
+            # cv2.imwrite(f"Photos/Logged_Screenshots/Skills/{skill}.png",gray)
             resized = cv2.resize(gray, (0,0),fx = 4, fy = 4, interpolation = cv2.INTER_CUBIC)
             text = pytesseract.image_to_string(resized,config="--psm 6")
             # pattern = r'(?:Duration|Cooldown):\s*(\d{1,2}m\s*)?(\d+\.\d{2}s|\d{1,2}s)?'
@@ -811,6 +782,9 @@ def Use_calculator():
             ag.sleep(3)
     calculator_loc = ag.locateCenterOnScreen("Photos/Buttons/Calculator_button.png",confidence=0.9)
     if calculator_loc == None:
+        exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.9)
+        ag.click(exit_loc,_pause=False)
+        ag.sleep(3)
         return
     ag.click(calculator_loc,_pause=False)
     ag.sleep(3)
