@@ -7,7 +7,7 @@ elif sys.platform == "darwin":
     os.chdir("/Users/markus/Documents/Legeplads/Clicker heroes stuff")
 # os.chdir("Clicker heroes stuff")
 MAX_HERO = "Moeru"
-GUILDED_HERO = "Cadmia"
+GUILDED_HERO = "Tsuchi"
 DEEP_RUN = False
 START_IDLE = True
 if __name__ == '__main__':
