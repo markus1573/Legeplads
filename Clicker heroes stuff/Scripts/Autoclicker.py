@@ -1,9 +1,10 @@
 import time
+import sys
 import threading
 import pyautogui as ag
 from pynput.keyboard import Listener, KeyCode, Key, HotKey
 
-delay = 0.025
+delay = 0.008 if sys.platform == "darwin" else 0.025
 start_stop_key = KeyCode.from_char("s")
 combination = {KeyCode.from_char('q')}
 # combination = {Key.cmd,KeyCode.from_char('b')}
@@ -73,5 +74,5 @@ def start_autoclicker_standalone(loc=None,daemon:bool=False):
 
 
 
-# if __name__ == '__main__':
-#     start_autoclicker_standalone((1000,500))
+if __name__ == '__main__':
+    start_autoclicker_standalone((1000,500))
