@@ -1,6 +1,11 @@
 from Functions import *
 from Autoclicker import*
-os.chdir("/Users/markus/Documents/Legeplads/Clicker heroes stuff")
+import sys
+if sys.platform == "win32":
+    os.chdir("C:/Users/marku/Documents/GitHub/Legeplads/Clicker heroes stuff")
+elif sys.platform == "darwin":
+    os.chdir("/Users/markus/Documents/Legeplads/Clicker heroes stuff")
+# os.chdir("Clicker heroes stuff")
 MAX_HERO = "Moeru"
 GUILDED_HERO = "Cadmia"
 DEEP_RUN = False
