@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import pytesseract
 import threading
+import torch
 import re
 import time
 from Hero_info import *
@@ -220,6 +221,22 @@ def Screenshot(region=None):
     if region:
         screenshot = screenshot[region[1]:region[1]+region[3], region[0]:region[0]+region[2]]         
     return screenshot
+
+
+def Find_fish_new():
+    screenshot_cropped = Screenshot(region=bbox)
+    screenshot_cropped = cv2.cvtColor(screenshot_cropped, cv2.COLOR_BGR2RGB)
+    results = model(screenshot_cropped)
+    if results.xyxy[0].shape[0] > 0:
+        x1, y1, x2, y2, _, _ = results.xyxy[0].numpy()[0]
+        x = (x1 + x2) / 2
+        y = (y1 + y2) / 2
+        if ag.pyscreeze.is_retina:
+            return (x//2+offsetx, y//2+offsety)
+        else:
+            return (x+offsetx,y+offsety)
+    else:
+        return None
 
 
 def Find_fish(target_color=(41, 92, 212), tolerance=5):
@@ -902,6 +919,7 @@ class Fishing(threading.Thread):
         remaining_time = 0
         global fishing
         fishing = False
+        ag.sleep(10)
         while self.program_running:
             while self.running:
                 while remaining_time > 0:
@@ -910,7 +928,7 @@ class Fishing(threading.Thread):
                 if not self.running:
                     break
                 # print("Fishing")
-                loc = Find_fish()
+                loc = Find_fish_new()
                 if not self.running:
                     break
                 if loc is not None:
@@ -922,7 +940,7 @@ class Fishing(threading.Thread):
                     # print("Fish clicked")
                     fishing = False
                 # else:
-                    # print("No fish found")
+                #     print("No fish found")
                 remaining_time = 60
             ag.sleep(1)
                     
@@ -930,6 +948,8 @@ class Fishing(threading.Thread):
 def Init_fishing(daemon:bool=True):
     global fishing_thread
     fishing_thread = Fishing(daemon=daemon)
+    global model
+    model = torch.hub.load("yolov5", 'custom', path='yolov5/runs/train/300_hpc/weights/best.pt', source='local')
     fishing_thread.start()
 
 
