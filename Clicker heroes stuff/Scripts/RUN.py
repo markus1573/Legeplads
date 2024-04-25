@@ -16,3 +16,7 @@ if __name__ == '__main__':
 
     # FocusWindowAndGetWindowPOS()
     
+    # if sys.platform == "win32":
+    #     needleHeight = needleHeight // 2
+    #     needleWidth = needleWidth // 2
+    #     needleImage = cv2.resize(needleImage, (needleWidth, needleHeight))
