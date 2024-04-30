@@ -26,7 +26,7 @@ def FocusWindowAndGetWindowPOS():
     
     """    
     
-    window = ag.locateCenterOnScreen("Photos/Buttons/FocusWindow_button.png",confidence=0.75)
+    window = ag.locateCenterOnScreen("Photos/Buttons/FocusWindow_button.png",confidence=0.9)
     if window == None:
         print("Could not find window")
         raise ValueError("Could not find window")
@@ -38,14 +38,10 @@ def FocusWindowAndGetWindowPOS():
 
     # Get window placement
     global window_width, window_height
-    # if ag.pyscreeze.is_retina():
-    #     window_width = int(1256*2)
-    #     window_height = int(696.5*2)
-    # else:
     window_width = int(1256)
     window_height = int(696.5)
     # Locate center of window
-    Wrench = ag.locateCenterOnScreen("Photos/Buttons/wrench_button.png",confidence=0.75)
+    Wrench = ag.locateCenterOnScreen("Photos/Buttons/wrench_button.png",confidence=0.9)
     if Wrench == None:
         raise ValueError("Could not find wrench button")
     
@@ -79,119 +75,6 @@ def FocusWindowAndGetWindowPOS():
     offsetx = int(offsetx)
     offsety = int(offsety)
     return bbox, offsetx, offsety
-
-
-
-
-# def check_pixel_color(pixel_color, target_color, tolerance):
-#     """
-#     Check if a pixel color matches the target color within the specified tolerance.
-    
-#     Parameters
-#     ----------
-#     pixel_color : tuple
-#         The color of the pixel.
-#     target_color : tuple
-#         The target color of the pixel.
-#     tolerance : int
-#         The color tolerance of the pixel.
-
-#     Returns
-#     -------
-#     bool
-#         True if the pixel color matches the target color within the specified tolerance, False otherwise.
-#     """
-#     if isinstance(pixel_color, int) or isinstance(pixel_color, np.uint8):
-#         pixel_color = (pixel_color, pixel_color, pixel_color)
-#     if isinstance(target_color, int) or isinstance(target_color, np.uint8):
-#         target_color = (target_color, target_color, target_color)        
-
-#     elif len(pixel_color) != len(target_color):
-#         raise ValueError("Pixel and target color must have the same number of channels")
-    
-#     for i in range(3):  # Check RGB channels
-#         if abs(pixel_color[i] - target_color[i]) > tolerance:
-#             return False
-#     return True
-
-
-# def search_pixel_color(image, target_color:tuple, tolerance: int):
-#     """
-#     Search for the target color in the image within the specified tolerance.
-
-#     Parameters
-#     ----------
-#     image : array
-#         The cropped screenshot.
-#     target_color : tuple
-#         The target color of the pixel.
-#     tolerance : int
-#         The color tolerance of the pixel.
-
-#     Returns
-#     -------
-#     matches : list
-#         A list of tuples containing the coordinates of the matches.
-#     """
-#     if len(image.shape) != 3:
-#         h,w = image.shape
-#     else:
-#         h, w, _ = image.shape
-#     matches = []
-
-#     for y in range(h):
-#         for x in range(w):
-#             if check_pixel_color(image[y, x], target_color, tolerance):
-#                 matches.append((x, y))
-
-#     return matches
-
-
-# def Remove_buttons(image):
-#     """
-#     TODO: Mangler at få dette til at virke til alle skærmstørrelser.
-
-#     Remove the ritual button, the farmmode button and the mute button from the screenshot.
-
-#     Parameters
-#     ----------
-#     image : array
-#         The screenshot.
-
-#     Returns
-#     -------
-#     image : array
-#         The cropped screenshot with the buttons removed.
-#     """
-   
-    
-#     # location of ritual button:
-#     ritual_region = Region([628,450,48,48])
-
-#     # remove ritual button from screenshot
-#     image[ritual_region[1]:ritual_region[1]+ritual_region[3],
-#           ritual_region[0]:ritual_region[0]+ritual_region[2],:] \
-#             [image[ritual_region[1]:ritual_region[1]+ritual_region[3],
-#           ritual_region[0]:ritual_region[0]+ritual_region[2],:][:,:,2]>200] = [0,0,0]
-
-#     # Location of farmmode button:
-#     farmmode_region = Region([1193,182,38,38])
-
-#     # remove farmmode button from screenshot
-#     image[farmmode_region[1]:farmmode_region[1]+farmmode_region[3],
-#           farmmode_region[0]:farmmode_region[0]+farmmode_region[2],:] \
-#             [image[farmmode_region[1]:farmmode_region[1]+farmmode_region[3],
-#           farmmode_region[0]:farmmode_region[0]+farmmode_region[2],:][:,:,2]==214] = [0,0,0]
-
-#     #location of mute button:
-#     mute_region = Region([1193,625,38,38])
-
-#     # remove mute button from screenshot
-#     image[mute_region[1]:mute_region[1]+mute_region[3],
-#           mute_region[0]:mute_region[0]+mute_region[2],:] \
-#             [image[mute_region[1]:mute_region[1]+mute_region[3],
-#           mute_region[0]:mute_region[0]+mute_region[2],:][:,:,2]==210] = [0,0,0]
-#     return image
 
 
 def Region(region:tuple|list):
@@ -239,53 +122,10 @@ def Find_fish_new():
         return None
 
 
-# def Find_fish(target_color=(41, 92, 212), tolerance=5):
-#     """
-#     Search for fish in the game window and place mouse on it.
-    
-#     Parameters
-#     ----------
-#     target_color : tuple. Default: (41,92,212)
-
-#     tolerance : int. Default: 5
-
-#     Returns
-#     -------
-#     tuple
-#         A tuple containing the coordinates of the fish.
-#     """
-#     # Get the screenshot
-#     screenshot_crop = Screenshot(region=bbox)
-#     cv2.imwrite("Photos/Logged_Screenshots/Screenshot1.png",screenshot_crop)
-
-#     # Remove ritual button from screenshot
-#     screenshot_crop = Remove_buttons(screenshot_crop)
-#     cv2.imwrite("Photos/Logged_Screenshots/Screenshot2.png",screenshot_crop)
-    
-#     # Search for the target color in the screenshot
-#     matches = search_pixel_color(screenshot_crop, target_color, tolerance)
-#     # print(f"Found {str(len(matches))} matches")
-#     if len(matches) > 40:
-#         # Calculate the average position of detected matches
-#         avg_x = int(np.mean([match[0] for match in matches]))
-#         avg_y = int(np.mean([match[1] for match in matches]))
-
-#         # calculate the median position of detected matches
-#         median_x = int(np.median([match[0] for match in matches]))
-#         median_y = int(np.median([match[1] for match in matches]))
-
-#         if ag.pyscreeze.is_retina:
-#             return (median_x//2+offsetx, median_y//2+offsety)
-#         else:
-#             return (median_x+offsetx,median_y+offsety)
-#     else:
-#         return None
-
-
 def BuyAllUpgrades():
     Scroll_Bottom()
     region = Region((338,620,185,50))
-    upgrades_button = ag.locateCenterOnScreen("Photos/Buttons/BuyAllUpgrades_button.png",region=region,confidence=0.75)
+    upgrades_button = ag.locateCenterOnScreen("Photos/Buttons/BuyAllUpgrades_button.png",region=region,confidence=0.9)
     if upgrades_button:
         ag.click(upgrades_button,_pause=False)
         ag.sleep(0.1)
@@ -293,38 +133,54 @@ def BuyAllUpgrades():
 
 
 def Scroll_Bottom():
-    Stop_background_processes()
+    start_background = False
+    if background_processes_running:
+        start_background = True
+        Stop_background_processes()
     ag.moveTo(575+offsetx,668+offsety,_pause=False)
     ag.dragTo(575+offsetx,670+offsety,duration=0.2,_pause=False)
     ag.sleep(0.1)
-    Start_background_processes()
+    if start_background:
+        Start_background_processes()
     return
 
 
 def Scroll_Top():
-    Stop_background_processes()
-    ag.moveTo(575+offsetx,268+offsety,_pause=False)
-    ag.dragTo(575+offsetx,265+offsety,duration=0.2,_pause=False)
+    start_background = False
+    if background_processes_running:
+        start_background = True
+        Stop_background_processes()
+    ag.moveTo(575+offsetx,269+offsety,_pause=False)
+    ag.dragTo(575+offsetx,266+offsety,duration=0.2,_pause=False)
     ag.sleep(0.1)
-    Start_background_processes()
+    if start_background:
+        Start_background_processes()
     return
 
 
 def Scroll_Up_fast(times=1):
-    Stop_background_processes()
+    start_background = False
+    if background_processes_running:
+        start_background = True
+        Stop_background_processes()
     for _ in range(times):
         ag.click(575+offsetx,250+offsety,clicks=21,interval=0.025,_pause=False)
     ag.sleep(0.1)
-    Start_background_processes()
+    if start_background:
+        Start_background_processes()
     return
 
 
 def Scroll_Down_fast(times=1):
-    Stop_background_processes()
+    start_background = False
+    if background_processes_running:
+        start_background = True
+        Stop_background_processes()
     for _ in range(times):
         ag.click(575+offsetx,685+offsety,clicks=21,interval=0.025,_pause=False)
     ag.sleep(0.1)
-    Start_background_processes()
+    if start_background:
+        Start_background_processes()
     return
 
 
@@ -336,11 +192,11 @@ def Hero_imsearch(hero:str):
         return
     if GUILDED_HERO !=None and (GUILDED_HERO == hero or hero in GUILDED_HERO_COPIES):
         while True:
-            box = ag.locateOnScreen(f"Photos/Heroes/Guilded/{hero}_guilded.png",region=region,confidence=0.75)
+            box = ag.locateOnScreen(f"Photos/Heroes/Guilded/{hero}_guilded.png",region=region,confidence=0.9)
             if box == None:
                 if not standard_run_thread.program_running:
                     return
-                buy_all_upgrades = ag.locateCenterOnScreen("Photos/Buttons/BuyAllUpgrades_button.png",region=region_buyallupgrades,confidence=0.75)
+                buy_all_upgrades = ag.locateCenterOnScreen("Photos/Buttons/BuyAllUpgrades_button.png",region=region_buyallupgrades,confidence=0.9)
                 if buy_all_upgrades == None:
                     if scrolled_up == True:
                         Scroll_Top()
@@ -358,11 +214,11 @@ def Hero_imsearch(hero:str):
                 return loc_buyhero
     else:
         while True:
-            box = ag.locateOnScreen(f"Photos/Heroes/Normal/{hero}.png",region=region,confidence=0.75)
+            box = ag.locateOnScreen(f"Photos/Heroes/Normal/{hero}.png",region=region,confidence=0.9)
             if box == None:
                 if not standard_run_thread.program_running:
                     return
-                buy_all_upgrades = ag.locateCenterOnScreen("Photos/Buttons/BuyAllUpgrades_button.png",region=region_buyallupgrades,confidence=0.75)
+                buy_all_upgrades = ag.locateCenterOnScreen("Photos/Buttons/BuyAllUpgrades_button.png",region=region_buyallupgrades,confidence=0.9)
                 if buy_all_upgrades == None:
                     if scrolled_up == True:
                         Scroll_Top()
@@ -481,10 +337,13 @@ def Get_Lvl(hero_loc):
         bbox = (hero_loc[0]+215,hero_loc[1]-20,128,28)
     im = Screenshot(region=bbox)
     im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    im_thresh = (im_gray < 255).astype(np.uint8)*255
-    im_resized = cv2.resize(im_thresh, (0,0),fx = 4, fy = 4, interpolation = cv2.INTER_CUBIC)
-    im_eroded = cv2.erode(im_resized, np.ones((2,2),np.uint8), iterations = 2)
-    text = pytesseract.image_to_string(im_eroded,config="--psm 13, outputbase digits")
+    im_resized = cv2.resize(im_gray, (0,0), fx = 4, fy = 4, interpolation = cv2.INTER_LINEAR)
+    im_blurred = cv2.medianBlur(im_resized, 3)
+    im_thresh = (im_blurred < 230).astype(np.uint8)*255
+    im_eroded = cv2.erode(im_thresh, np.ones((2,2),np.uint8), iterations = 1)
+    im_dilated = cv2.dilate(im_eroded, np.ones((2,2),np.uint8), iterations = 1)
+    im_blurred = cv2.medianBlur(im_dilated, 3)
+    text = pytesseract.image_to_string(im_blurred,config="--psm 13, outputbase digits")
     text_int = extract_numeric(text)
     if text == "" or text_int == "":
         lvl = 0
@@ -539,7 +398,7 @@ def Go_idle():
     IDLE = True
     Stop_autoclicker()
     region = Region([1176,350,55,55])
-    loc = ag.locateCenterOnScreen("Photos/Buttons/Autoclicker_button.png",region=region,confidence=0.75)
+    loc = ag.locateCenterOnScreen("Photos/Buttons/Autoclicker_button.png",region=region,confidence=0.9)
     if loc:
         ag.keyDown("c",_pause=False)
         ag.sleep(0.1)
@@ -563,17 +422,22 @@ def Go_active():
 def Get_Zone():
     region = Region([912,20,48,50])
     image = Screenshot(region=region)
+    im_resized = cv2.resize(image, (0,0), fx = 4, fy = 4, interpolation = cv2.INTER_LINEAR)
+    im_blurred = cv2.medianBlur(im_resized, 3)
     target_color = (56, 158, 241)
-    mask = cv2.inRange(image, target_color, target_color)
-    thresholded = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY_INV)[1]
-    resized = cv2.resize(thresholded, (0,0),fx = 4, fy = 4, interpolation = cv2.INTER_CUBIC)
-    eroded = cv2.erode(resized, np.ones((2,2), np.uint8), iterations = 2)
-    text = pytesseract.image_to_string(eroded,config=f"--psm 6, outputbase digits")
+    mask = cv2.inRange(im_blurred, target_color, target_color)
+    im_thresh = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY_INV)[1]
+    im_eroded = cv2.erode(im_thresh, np.ones((2,2),np.uint8), iterations = 2)
+    im_dilated = cv2.dilate(im_eroded, np.ones((2,2),np.uint8), iterations = 1)
+    im_blurred = cv2.medianBlur(im_dilated, 3)
+    text = pytesseract.image_to_string(im_blurred,config="--psm 4, outputbase digits")
     if text == "":
-        return Get_Zone()
+        Get_Zone()
     else:
         zone_lvl = extract_numeric(text)
+        # cv2.imwrite("Photos/Logged_Screenshots/Get_Zone.png",image)  
         return zone_lvl
+
 
 def Has_duplicates(hero):
     hero = re.sub(r'[0-9]+', '', hero)
@@ -587,7 +451,7 @@ def Has_duplicates(hero):
 
 
 def Guild_scroll():
-    ag.click(1103+offsetx,485+offsety,_pause=False,clicks=19,interval=0.05)
+    ag.click(1103+offsetx,485+offsety,_pause=False,clicks=19,interval=0.025)
     ag.sleep(0.1)
 
 
@@ -595,9 +459,8 @@ def guild_hero(hero:str):
     Stop_background_processes()
     Stop_check_ascend()
     region = Region([70,365,100,325])
-    print(region)
     Scroll_Bottom()
-    guild_button_loc = ag.locateCenterOnScreen("Photos/Buttons/Guilded_button.png",region=region,confidence=0.75)
+    guild_button_loc = ag.locateCenterOnScreen("Photos/Buttons/Guilded_button.png",region=region,confidence=0.9)
     ag.click(guild_button_loc,_pause=False)
     ag.sleep(0.1)
     guild_hero_loc = Guild_imsearch(hero)
@@ -609,7 +472,7 @@ def guild_hero(hero:str):
     ag.keyUp("q",_pause=False)
     ag.sleep(0.1)
     check_guild_region = Region([135,115,950,390])
-    loc = ag.locateCenterOnScreen(f"Photos/Guilds/Guilded/{hero}_guilded.png",region=check_guild_region,confidence=0.75)
+    loc = ag.locateCenterOnScreen(f"Photos/Guilds/Guilded/{hero}_guilded.png",region=check_guild_region,confidence=0.9)
     ag.sleep(0.1)
     if loc == None:
         print(f"Could not guild {hero}. Not enough HS.")
@@ -622,7 +485,7 @@ def guild_hero(hero:str):
             GUILDED_HERO_COPIES = duplicates
         else:
             GUILDED_HERO_COPIES = []
-    exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.75)
+    exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.9)
     ag.click(exit_loc,_pause=False)
     ag.sleep(0.1)
     Start_background_processes()
@@ -634,13 +497,13 @@ def Guild_imsearch(hero:str,counter=0):
     if counter == 3:
         raise ValueError("Could not find hero")
     if GUILDED_HERO == hero:
-        loc = ag.locateCenterOnScreen(f"Photos/Guilds/Guilded/{hero}_guilded.png",region=region,confidence=0.75)
+        loc = ag.locateCenterOnScreen(f"Photos/Guilds/Guilded/{hero}_guilded.png",region=region,confidence=0.9)
         if loc == None:
             Guild_scroll()
             return Guild_imsearch(hero,counter=counter+1)
         return loc
     else:
-        loc = ag.locateCenterOnScreen(f"Photos/Guilds/Normal/{hero}.png",region=region,confidence=0.75)
+        loc = ag.locateCenterOnScreen(f"Photos/Guilds/Normal/{hero}.png",region=region,confidence=0.9)
         if loc == None:
             Guild_scroll()
             return Guild_imsearch(hero,counter=counter+1)
@@ -697,12 +560,14 @@ def get_skill_timers():
             ag.sleep(0.2)
             image = Screenshot(region=skill_regions[skill])
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            # cv2.imwrite(f"Photos/Logged_Screenshots/Skills/{skill}.png",gray)
+            cv2.imwrite(f"Photos/Logged_Screenshots/Skills/{skill}.png",gray)
             resized = cv2.resize(gray, (0,0),fx = 4, fy = 4, interpolation = cv2.INTER_CUBIC)
             text = pytesseract.image_to_string(resized,config="--psm 6")
             # pattern = r'(?:Duration|Cooldown):\s*(\d{1,2}m\s*)?(\d+\.\d{2}s|\d{1,2}s)?'
             pattern = r'(?:Duration|Cooldown):\s*(\d{1,2}h\s*)?(\d{1,2}m\s*)?(\d+\.\d{2}s|\d{1,2}s)?'
             matches = re.findall(pattern, text)
+            duration = None
+            cooldown = None
             if len(matches) == 3:
                 duration = [match.replace(" ","").replace("h","").replace("m","").replace("s","") for match in matches[0]]
                 duration = [int(float(i)) if i !="" else 0 for i in duration]
@@ -740,22 +605,22 @@ def Get_new_guilds(first_run=True):
     if GUILDED_HERO != None:
         new_guild_region = Region([1165,550,50,50])
         window_region = Region([300,120,675,430])
-        new_guild_loc = ag.locateCenterOnScreen("Photos/Buttons/New_guild_button.png",region=new_guild_region,confidence=0.75)
+        new_guild_loc = ag.locateCenterOnScreen("Photos/Buttons/New_guild_button.png",region=new_guild_region,confidence=0.9)
         if new_guild_loc != None:
             ag.click(new_guild_loc,_pause=False)
             ag.sleep(0.1)
             ag.click(window_width/2+offsetx,window_height/2+offsety,_pause=False)
             ag.sleep(2)
-            open_all_guilds_loc = ag.locateCenterOnScreen("Photos/Buttons/Open_all_guilds_button.png",region=window_region,confidence=0.75)
+            open_all_guilds_loc = ag.locateCenterOnScreen("Photos/Buttons/Open_all_guilds_button.png",region=window_region,confidence=0.9)
             if open_all_guilds_loc == None:
-                exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.75)
+                exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.9)
                 ag.click(exit_loc,_pause=False)
                 ag.sleep(0.1)
                 return Get_new_guilds(first_run=False)
             else:
                 ag.click(open_all_guilds_loc,_pause=False)
                 ag.sleep(0.1)
-                exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.75)
+                exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.9)
                 ag.click(exit_loc,_pause=False)
                 ag.sleep(0.1)
                 guild_hero(GUILDED_HERO)
@@ -768,25 +633,25 @@ def Get_new_guilds(first_run=True):
 def Use_calculator():
     wrench_region = Region([1195,9,35,35])
     save_region = Region([300,120,675,430])
-    wrench_loc = ag.locateCenterOnScreen("Photos/Buttons/Wrench_button.png",region=wrench_region,confidence=0.75)
+    wrench_loc = ag.locateCenterOnScreen("Photos/Buttons/Wrench_button.png",region=wrench_region,confidence=0.9)
     ag.click(wrench_loc,_pause=False)
     ag.sleep(0.1)
-    save_loc = ag.locateCenterOnScreen("Photos/Buttons/Save_button.png",region=save_region,confidence=0.75)
+    save_loc = ag.locateCenterOnScreen("Photos/Buttons/Save_button.png",region=save_region,confidence=0.9)
     ag.click(save_loc,_pause=False)
     ag.sleep(3)
-    cancel_loc = ag.locateCenterOnScreen("Photos/Buttons/Cancel_button.png",region=save_region,confidence=0.75)
+    cancel_loc = ag.locateCenterOnScreen("Photos/Buttons/Cancel_button.png",region=save_region,confidence=0.9)
     if cancel_loc != None:
         ag.click(cancel_loc,_pause=False)
         ag.sleep(3)
     else:
         ag.sleep(3)
-        cancel_loc = ag.locateCenterOnScreen("Photos/Buttons/Cancel_button.png",region=save_region,confidence=0.75)
+        cancel_loc = ag.locateCenterOnScreen("Photos/Buttons/Cancel_button.png",region=save_region,confidence=0.9)
         if cancel_loc != None:
             ag.click(cancel_loc,_pause=False)
             ag.sleep(3)
-    calculator_loc = ag.locateCenterOnScreen("Photos/Buttons/Calculator_button.png",confidence=0.75)
+    calculator_loc = ag.locateCenterOnScreen("Photos/Buttons/Calculator_button.png",confidence=0.9)
     if calculator_loc == None:
-        exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.75)
+        exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.9)
         ag.click(exit_loc,_pause=False)
         ag.sleep(3)
         return
@@ -796,33 +661,33 @@ def Use_calculator():
     ag.sleep(0.1)
     ag.scroll(50,_pause=False)
     ag.sleep(3)
-    pastesave_loc = ag.locateCenterOnScreen("Photos/Buttons/Paste_save_button.png",confidence=0.75)
+    pastesave_loc = ag.locateCenterOnScreen("Photos/Buttons/Paste_save_button.png",confidence=0.9)
     ag.click(pastesave_loc,_pause=False)
     ag.sleep(3)
     ag.hotkey("command","v",_pause=False,interval=0.1)
     ag.sleep(3)
-    calculator_import_loc = ag.locateCenterOnScreen("Photos/Buttons/Calculator_import_button.png",confidence=0.75)
+    calculator_import_loc = ag.locateCenterOnScreen("Photos/Buttons/Calculator_import_button.png",confidence=0.9)
     ag.click(calculator_import_loc,_pause=False)
     ag.sleep(3)
-    import_save_loc = ag.locateCenterOnScreen("Photos/Buttons/Import_save_button.png",confidence=0.75)
+    import_save_loc = ag.locateCenterOnScreen("Photos/Buttons/Import_save_button.png",confidence=0.9)
     ag.click(import_save_loc,_pause=False)
     ag.sleep(3)
     ag.hotkey("command","c",_pause=False,interval=0.1)
     ag.sleep(3)
-    clickerheroes_loc = ag.locateCenterOnScreen("Photos/Buttons/Clickerheroes_button.png",confidence=0.75)
+    clickerheroes_loc = ag.locateCenterOnScreen("Photos/Buttons/Clickerheroes_button.png",confidence=0.9)
     ag.click(clickerheroes_loc,_pause=False)
     ag.sleep(3)
-    import_loc = ag.locateCenterOnScreen("Photos/Buttons/Import_button.png",region=save_region,confidence=0.75)
+    import_loc = ag.locateCenterOnScreen("Photos/Buttons/Import_button.png",region=save_region,confidence=0.9)
     ag.click(import_loc,_pause=False)
     ag.sleep(3)
     ag.click(_pause=False)
     ag.sleep(3)
     ag.hotkey("command","v",_pause=False,interval=0.1)
     ag.sleep(3)
-    okay_loc = ag.locateCenterOnScreen("Photos/Buttons/Okay_button.png",region=save_region,confidence=0.75)
+    okay_loc = ag.locateCenterOnScreen("Photos/Buttons/Okay_button.png",region=save_region,confidence=0.9)
     ag.click(okay_loc,_pause=False)
     ag.sleep(3)
-    exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.75)
+    exit_loc = ag.locateCenterOnScreen("Photos/Buttons/Exit_button.png",confidence=0.9)
     ag.click(exit_loc,_pause=False)
     ag.sleep(3)
 
@@ -831,9 +696,9 @@ def Search_latest_hero(hero:str,found_hero=False):
     region = Region([343,240,125,385])
     if not standard_run_thread.program_running:
         return
-    if GUILDED_HERO !=None and (GUILDED_HERO == hero or hero in GUILDED_HERO_COPIES):
+    if GUILDED_HERO != None and (GUILDED_HERO == hero or hero in GUILDED_HERO_COPIES):
         while True:
-            box = ag.locateOnScreen(f"Photos/Heroes/Guilded/{hero}_guilded.png",region=region,confidence=0.75)
+            box = ag.locateOnScreen(f"Photos/Heroes/Guilded/{hero}_guilded.png",region=region,confidence=0.9)
             if box == None and not found_hero:
                 return None
             elif box == None and found_hero:
@@ -845,7 +710,7 @@ def Search_latest_hero(hero:str,found_hero=False):
                 return loc_buyhero
     else:
         while True:
-            box = ag.locateOnScreen(f"Photos/Heroes/Normal/{hero}.png",region=region,confidence=0.75)
+            box = ag.locateOnScreen(f"Photos/Heroes/Normal/{hero}.png",region=region,confidence=0.9)
             if box == None and not found_hero:
                 return None
             elif box == None and found_hero:
@@ -853,7 +718,7 @@ def Search_latest_hero(hero:str,found_hero=False):
                 return Search_latest_hero(hero,found_hero=True)
             else:
                 loc_heroname = ((box[0]+box[2]),box[1]+box[3]//2)
-                loc_buyhero = (loc_heroname[0]-335,loc_heroname[1]+30)
+                loc_buyhero = (loc_heroname[0]-335,loc_heroname[1]+30) 
                 return loc_buyhero
 
 
@@ -886,6 +751,7 @@ class Fishing(threading.Thread):
         super(Fishing, self).__init__(daemon=daemon)
         self.running = True
         self.program_running = True
+        self.remaining_time = 0
     
     def start_fishing(self):
         self.running = True
@@ -894,15 +760,13 @@ class Fishing(threading.Thread):
         self.running = False
 
     def run(self):
-        remaining_time = 0
         global fishing
         fishing = False
-        ag.sleep(10)
         while self.program_running:
             while self.running:
-                while remaining_time > 0:
+                while self.remaining_time > 0:
                     ag.sleep(1)
-                    remaining_time -= 1
+                    self.remaining_time -= 1
                 if not self.running:
                     break
                 # print("Fishing")
@@ -919,7 +783,7 @@ class Fishing(threading.Thread):
                     fishing = False
                 # else:
                 #     print("No fish found")
-                remaining_time = 60
+                self.remaining_time = 5
             ag.sleep(1)
                     
 
@@ -956,7 +820,7 @@ class Check_Ascend(threading.Thread):
         salvage_region = Region([393,240,163,50])
         yes1_region = Region([431,390,163,50])
         yes2_region = Region([498,415,110,50])
-        ascend_loc = ag.locateCenterOnScreen("Photos/Buttons/Ascend_button.png",region=ascend_region,confidence=0.75)
+        ascend_loc = ag.locateCenterOnScreen("Photos/Buttons/Ascend_button.png",region=ascend_region,confidence=0.9)
         if ascend_loc == None:
             print("Could not find ascend button. Leveling Amenhotep to 150")
             Lvl_Hero_To("Amenhotep",Lvl=150)
@@ -965,13 +829,13 @@ class Check_Ascend(threading.Thread):
         else:
             ag.click(ascend_loc,_pause=False)
             ag.sleep(0.5)
-            salvage_loc = ag.locateCenterOnScreen("Photos/Buttons/Salvage_button.png",region=salvage_region,confidence=0.75)
+            salvage_loc = ag.locateCenterOnScreen("Photos/Buttons/Salvage_button.png",region=salvage_region,confidence=0.9)
             if salvage_loc:
-                yes1_loc = ag.locateCenterOnScreen("Photos/Buttons/Yes_button.png",region=yes1_region,confidence=0.75)
+                yes1_loc = ag.locateCenterOnScreen("Photos/Buttons/Yes_button.png",region=yes1_region,confidence=0.9)
                 if yes1_loc:
                     ag.click(yes1_loc,_pause=False)
                     ag.sleep(0.5)
-            yes2_loc = ag.locateCenterOnScreen("Photos/Buttons/Yes_button.png",region=yes2_region,confidence=0.75)
+            yes2_loc = ag.locateCenterOnScreen("Photos/Buttons/Yes_button.png",region=yes2_region,confidence=0.9)
             if yes2_loc:
                 ag.click(yes2_loc,_pause=False)
                 ag.sleep(0.5)
@@ -1124,10 +988,10 @@ class Auto_progress(threading.Thread):
                     self.remaining_time -= 1
                 if not self.running:
                     break
-                Farmmode_button = ag.locateCenterOnScreen("Photos/Buttons/Farmmode_button.png",region=region,confidence=0.75)
+                Farmmode_button = ag.locateCenterOnScreen("Photos/Buttons/Farmmode_button.png",region=region,confidence=0.9)
                 if Farmmode_button:
                     ag.press("a",_pause=False)
-                self.remaining_time = 40
+                self.remaining_time = 30
             ag.sleep(1)
                 
 
@@ -1287,6 +1151,7 @@ class Standard_run(threading.Thread):
                 except:
                     if not self.program_running:
                         break
+                    Start_background_processes()
                     Start_autoclicker()
                     ag.sleep(10)
                     Stop_autoclicker()
@@ -1340,16 +1205,18 @@ def Stop_standard_run():
 
 
 
-    
-
 
 def Start_background_processes():
+    global background_processes_running
+    background_processes_running = True
     Start_fishing()
     Start_auto_progress()
     Start_check_ascend()
     
 
 def Stop_background_processes():
+    global background_processes_running
+    background_processes_running = False
     Stop_fishing()
     Stop_auto_progress()
     Stop_check_ascend()
@@ -1358,9 +1225,12 @@ def Stop_background_processes():
 def Initialize_program():
     os.system("clear")
     global model
-    import pathlib
-    pathlib.PosixPath = pathlib.WindowsPath
-    model = torch.hub.load("yolov5", 'custom', path=os.path.join('yolov5', 'runs', 'train', '300_hpc', 'weights', 'best.pt'), source='local',device='cpu')
+    if sys.platform == "win32":
+        import pathlib
+        pathlib.PosixPath = pathlib.WindowsPath
+    model = torch.hub.load("yolov5", 'custom', path=os.path.join('yolov5', 'runs', 'train', 
+                                                                 '300_hpc', 'weights', 'best.pt'), 
+                                                                 source='local',device='cpu',verbose=False)
     global pause
     if sys.platform == "darwin":
         pause = False

@@ -8,10 +8,15 @@ elif sys.platform == "darwin":
 
 MAX_HERO = "Moeru"
 GUILDED_HERO = "Tsuchi"
-DEEP_RUN = False
+DEEP_RUN = True
 START_IDLE = True
 if __name__ == '__main__':
     Initialize_program()
 
     # FocusWindowAndGetWindowPOS()
     
+
+
+# TODO:
+# Den checker ikke autoprogression til at starte med
+# fordi den er inde og guilde heroes.
