@@ -2,3 +2,4 @@
 Deep learning/02456-deep-learning-with-PyTorch/5_Transformers/rrn-lm.ckpt
 **/data
 **/*.pickle
+**/__pycache__
